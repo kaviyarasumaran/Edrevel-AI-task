@@ -83,7 +83,7 @@ curl -X POST http://127.0.0.1:8000/api/learning-paths/default/evaluate \
 
 ## Reference Screen
 
-![Reference Screen](screens/Screenshot%202026-08-19%20at%202.07.58%20PM.png)
+![Reference Screen](screens/Screenshot.png)
 
 ## Assumptions And Tradeoffs
 
