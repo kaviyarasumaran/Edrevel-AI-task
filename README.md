@@ -81,6 +81,10 @@ curl -X POST http://127.0.0.1:8000/api/learning-paths/default/evaluate \
 - `backend/data/components.json` preserves the provided minimal component example.
 - `backend/data/default-learning-path.json` seeds a fuller SAT-style adaptive flow for the demo UI.
 
+## Reference Screen
+
+![Reference Screen](screens/Screenshot%202026-08-19%20at%202.07.58%20PM.png)
+
 ## Assumptions And Tradeoffs
 
 - The backend uses direct Python validation for the schema-critical fields instead of a third-party JSON Schema validator to keep setup lightweight.
