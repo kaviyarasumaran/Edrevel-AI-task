@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/learning-path.schema.json",
+  "title": "Learning Path Save Payload",
+  "description": "Schema for saving a learning path built in the Adaptive Learning Path Builder canvas.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "status", "nodes", "edges"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 150
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "published"]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zoom": { "type": "number", "minimum": 0.1, "maximum": 4 },
+        "offsetX": { "type": "number" },
+        "offsetY": { "type": "number" }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/edge" }
+    }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "componentId", "type", "label", "position"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "componentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "type": {
+          "type": "string",
+          "enum": ["start", "unit", "assessment", "end"]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "position": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "approximateDurationMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 600
+            },
+            "assessment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["maxScore", "passingScore"],
+              "properties": {
+                "maxScore": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10000
+                },
+                "passingScore": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceNodeId", "targetNodeId", "conditions"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "sourceNodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "targetNodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "conditions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operator", "rules"],
+          "properties": {
+            "operator": {
+              "type": "string",
+              "enum": ["AND", "OR"]
+            },
+            "rules": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/rule" }
+            }
+          }
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceType", "sourceNodeId", "metric", "operator"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["assessment", "unit"]
+        },
+        "sourceNodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "metric": {
+          "type": "string",
+          "enum": [
+            "completion",
+            "passed",
+            "score",
+            "score_range",
+            "time_spent_minutes",
+            "percentage_completion"
+          ]
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["eq", "ne", "gt", "gte", "lt", "lte", "between"]
+        },
+        "value": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "number" },
+            { "type": "string" }
+          ]
+        },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "number" },
+            "max": { "type": "number" },
+            "minInclusive": { "type": "boolean" },
+            "maxInclusive": { "type": "boolean" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operator": { "const": "between" }
+            },
+            "required": ["operator"]
+          },
+          "then": {
+            "required": ["range"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "metric": { "enum": ["completion", "passed"] }
+            },
+            "required": ["metric"]
+          },
+          "then": {
+            "properties": {
+              "value": { "type": "boolean" }
+            },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "metric": { "enum": ["score", "time_spent_minutes", "percentage_completion"] }
+            },
+            "required": ["metric"]
+          },
+          "then": {
+            "properties": {
+              "value": { "type": "number" }
+            },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "metric": { "const": "score_range" }
+            },
+            "required": ["metric"]
+          },
+          "then": {
+            "required": ["range"]
+          }
+        }
+      ]
+    }
+  }
+}

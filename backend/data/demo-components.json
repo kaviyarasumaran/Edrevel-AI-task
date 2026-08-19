@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": "cmp-section",
+      "title": "Section",
+      "shortDescription": "Add a new section to the learning path.",
+      "type": "assessment",
+      "approximateDurationMinutes": 0,
+      "metadata": {
+        "assessment": {
+          "maxScore": 100,
+          "passingScore": 50
+        }
+      }
+    },
+    {
+      "id": "cmp-group",
+      "title": "Group",
+      "shortDescription": "Add a new group to the learning path.",
+      "type": "unit",
+      "approximateDurationMinutes": 0,
+      "metadata": {
+        "unit": {
+          "recommendedMinutes": 0
+        }
+      }
+    }
+  ],
+  "totalCount": 2
+}

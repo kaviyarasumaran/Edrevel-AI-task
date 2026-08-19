@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": "cmp-assess-math-1",
+      "title": "Math Module 1 Assessment",
+      "shortDescription": "Baseline math diagnostic used to route learners.",
+      "type": "assessment",
+      "approximateDurationMinutes": 35,
+      "metadata": {
+        "assessment": {
+          "maxScore": 100,
+          "passingScore": 50
+        }
+      }
+    },
+    {
+      "id": "cmp-unit-math-2-easy",
+      "title": "Math Module 2 - Easy",
+      "shortDescription": "Foundational math remediation unit.",
+      "type": "unit",
+      "approximateDurationMinutes": 35,
+      "metadata": {
+        "unit": {
+          "recommendedMinutes": 30
+        }
+      }
+    }
+  ],
+  "totalCount": 2
+}

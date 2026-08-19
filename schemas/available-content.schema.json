@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/available-content.schema.json",
+  "title": "Available Content API Response",
+  "description": "Schema for the GET /api/components response used to populate the left-side component panel in the Adaptive Learning Path Builder.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["items", "totalCount"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/component" }
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "shortDescription",
+        "type",
+        "approximateDurationMinutes"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Unique component identifier."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "shortDescription": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "type": {
+          "type": "string",
+          "enum": ["unit", "assessment"]
+        },
+        "approximateDurationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assessment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["maxScore", "passingScore"],
+              "properties": {
+                "maxScore": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10000
+                },
+                "passingScore": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              },
+              "allOf": [
+                {
+                  "if": { "required": ["maxScore", "passingScore"] },
+                  "then": {
+                    "properties": {
+                      "passingScore": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "unit": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "recommendedMinutes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 600
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "assessment" }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "required": ["assessment"],
+                "properties": {
+                  "assessment": {
+                    "type": "object",
+                    "required": ["maxScore", "passingScore"],
+                    "properties": {
+                      "maxScore": { "type": "integer", "minimum": 1 },
+                      "passingScore": { "type": "integer", "minimum": 0 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "unit" }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "unit": { "$ref": "#/$defs/component/properties/metadata/properties/unit" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

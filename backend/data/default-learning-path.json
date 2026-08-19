@@ -1,0 +1,228 @@
+{
+  "id": "lp-sat-adaptive-001",
+  "name": "SAT Adaptive Path",
+  "description": "Routes learners based on math and reading performance.",
+  "status": "draft",
+  "version": 1,
+  "canvas": {
+    "zoom": 0.7,
+    "offsetX": 0,
+    "offsetY": 0
+  },
+  "nodes": [
+    {
+      "id": "node-start",
+      "componentId": "system-start",
+      "type": "start",
+      "label": "Start Assessment",
+      "position": { "x": 420, "y": 40 }
+    },
+    {
+      "id": "node-math-1",
+      "componentId": "cmp-assess-math-1",
+      "type": "assessment",
+      "label": "Math Module 1",
+      "position": { "x": 420, "y": 150 },
+      "config": {
+        "approximateDurationMinutes": 35,
+        "assessment": {
+          "maxScore": 100,
+          "passingScore": 50
+        }
+      }
+    },
+    {
+      "id": "node-math-2-easy",
+      "componentId": "cmp-unit-math-2-easy",
+      "type": "unit",
+      "label": "Math Module 2 - Easy",
+      "position": { "x": 270, "y": 330 },
+      "config": {
+        "approximateDurationMinutes": 35
+      }
+    },
+    {
+      "id": "node-math-2-advanced",
+      "componentId": "cmp-unit-math-2-advanced",
+      "type": "unit",
+      "label": "Math Module 2 - Advanced",
+      "position": { "x": 590, "y": 330 },
+      "config": {
+        "approximateDurationMinutes": 35
+      }
+    },
+    {
+      "id": "node-reading-1",
+      "componentId": "cmp-assess-reading-1",
+      "type": "assessment",
+      "label": "Reading and Writing Module 1",
+      "position": { "x": 420, "y": 500 },
+      "config": {
+        "approximateDurationMinutes": 32,
+        "assessment": {
+          "maxScore": 100,
+          "passingScore": 50
+        }
+      }
+    },
+    {
+      "id": "node-reading-easy",
+      "componentId": "cmp-unit-reading-easy",
+      "type": "unit",
+      "label": "R&W Module 2 - Easy",
+      "position": { "x": 270, "y": 680 },
+      "config": {
+        "approximateDurationMinutes": 32
+      }
+    },
+    {
+      "id": "node-reading-advanced",
+      "componentId": "cmp-unit-reading-advanced",
+      "type": "unit",
+      "label": "R&W Module 2 - Advanced",
+      "position": { "x": 590, "y": 680 },
+      "config": {
+        "approximateDurationMinutes": 32
+      }
+    },
+    {
+      "id": "node-end",
+      "componentId": "system-end",
+      "type": "end",
+      "label": "Complete Assessment",
+      "position": { "x": 420, "y": 850 }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-start-math1",
+      "sourceNodeId": "node-start",
+      "targetNodeId": "node-math-1",
+      "label": "Start assessment",
+      "priority": 1,
+      "isDefault": true,
+      "conditions": {
+        "operator": "AND",
+        "rules": []
+      }
+    },
+    {
+      "id": "edge-math1-easy",
+      "sourceNodeId": "node-math-1",
+      "targetNodeId": "node-math-2-easy",
+      "label": "Score below passing",
+      "priority": 1,
+      "isDefault": false,
+      "conditions": {
+        "operator": "AND",
+        "rules": [
+          {
+            "id": "rule-math1-low",
+            "sourceType": "assessment",
+            "sourceNodeId": "node-math-1",
+            "metric": "score_range",
+            "operator": "between",
+            "range": {
+              "min": 0,
+              "max": 49,
+              "minInclusive": true,
+              "maxInclusive": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "edge-math1-advanced",
+      "sourceNodeId": "node-math-1",
+      "targetNodeId": "node-math-2-advanced",
+      "label": "Passed assessment",
+      "priority": 2,
+      "isDefault": false,
+      "conditions": {
+        "operator": "AND",
+        "rules": [
+          {
+            "id": "rule-math1-passed",
+            "sourceType": "assessment",
+            "sourceNodeId": "node-math-1",
+            "metric": "passed",
+            "operator": "eq",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "edge-math-advanced-reading",
+      "sourceNodeId": "node-math-2-advanced",
+      "targetNodeId": "node-reading-1",
+      "label": "Continue",
+      "priority": 1,
+      "isDefault": true,
+      "conditions": {
+        "operator": "AND",
+        "rules": []
+      }
+    },
+    {
+      "id": "edge-reading-easy",
+      "sourceNodeId": "node-reading-1",
+      "targetNodeId": "node-reading-easy",
+      "label": "Score below passing",
+      "priority": 1,
+      "isDefault": false,
+      "conditions": {
+        "operator": "AND",
+        "rules": [
+          {
+            "id": "rule-reading-low",
+            "sourceType": "assessment",
+            "sourceNodeId": "node-reading-1",
+            "metric": "score_range",
+            "operator": "between",
+            "range": {
+              "min": 0,
+              "max": 49,
+              "minInclusive": true,
+              "maxInclusive": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "edge-reading-advanced",
+      "sourceNodeId": "node-reading-1",
+      "targetNodeId": "node-reading-advanced",
+      "label": "Passed assessment",
+      "priority": 2,
+      "isDefault": false,
+      "conditions": {
+        "operator": "AND",
+        "rules": [
+          {
+            "id": "rule-reading-passed",
+            "sourceType": "assessment",
+            "sourceNodeId": "node-reading-1",
+            "metric": "passed",
+            "operator": "eq",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "edge-reading-end",
+      "sourceNodeId": "node-reading-advanced",
+      "targetNodeId": "node-end",
+      "label": "Finish",
+      "priority": 1,
+      "isDefault": true,
+      "conditions": {
+        "operator": "AND",
+        "rules": []
+      }
+    }
+  ]
+}
